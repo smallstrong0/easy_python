@@ -1,0 +1,36 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# @Author: ${CREATE_BY}
+# @Time: ${CREATE_TIME}
+# @File: ${table}.py
+
+import lib.dao.${table}
+import lib.common.const as com_const
+import lib.common.error as error_const
+import lib.common.utils as com_utils
+
+
+def add_${table}(params):
+    # todo
+    return None, {}
+
+
+def delete_${table}(params):
+    # todo
+    return None, {}
+
+
+def update_${table}(params):
+    # todo
+    return None, {}
+
+
+def get_${table}(params):
+    # todo
+    return None, {}
+
+
+def get_${table}_list(params):
+    # todo
+    return None, {}

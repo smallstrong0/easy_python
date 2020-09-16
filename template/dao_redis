@@ -1,0 +1,27 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# @Author: ${CREATE_BY}
+# @Time: ${CREATE_TIME}
+# @File: ${table}_redis.py
+
+from lib.common.redis_key import ${Table}Redis
+from lib.common.redis_util import redis_client
+from lib.common.utils import serialize, deserialize
+
+
+def set_${table}_cache(key, data):
+    redis_client.set_str_cache(key=${Table}Redis.UNIQUE_KEY.format(key), str=serialize(data), ex=${Table}Redis.EX)
+
+
+def get_${table}_cache(key):
+    data = redis_client.get_str_cache(key=${Table}Redis.UNIQUE_KEY.format(key))
+    if data:
+        data = deserialize(data)
+    else:
+        data = {}
+    return data
+
+
+def delete_${table}_cache(key):
+    redis_client.delete_cache(key=${Table}Redis.UNIQUE_KEY.format(key))

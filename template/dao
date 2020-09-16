@@ -1,0 +1,58 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# @Author: ${CREATE_BY}
+# @Time: ${CREATE_TIME}
+# @File: ${table}.py
+
+import lib.dao.${table}_mysql as ${table}_mysql
+import lib.dao.${table}_redis as ${table}_redis
+import lib.common.const as com_const
+import lib.common.error as error_const
+import lib.common.utils as com_utils
+from sqlalchemy import create_engine, or_, and_, any_, text, exists, func, distinct, between
+
+from lib.model.model import ${Table}
+
+# 注意所有的sql都传列表类型
+### add func #####
+
+def add_${table}():
+    # todo
+    return
+
+def bulk_add_${table}(data_list):
+    return ${table}_mysql.bulk_add_${table}(data_list=data_list)
+
+### add func #####
+
+### delete func #####
+def delete_${table}():
+    # todo
+    return
+
+### delete func #####
+
+### update func #####
+def update_${table}():
+    # todo
+    return
+
+def bulk_update_${table}(data_list):
+    return ${table}_mysql.bulk_update_${table}(data_list=data_list)
+
+### update func #####
+
+### get one data func #####
+def get_${table}():
+    # todo
+    return
+
+### get one data func #####
+
+### get data_list func #####
+def get_${table}_list():
+    # todo
+    return
+
+### get data_list func #####
