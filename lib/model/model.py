@@ -47,10 +47,9 @@ if __name__ == '__main__':
     from sqlalchemy import create_engine
     from sqlalchemy.orm import sessionmaker, scoped_session
     from sqlalchemy import create_engine
-    from setting import mysql
+    from setting import MYSQL
 
-    conn = mysql
-    engine = create_engine(conn)
+    engine = create_engine(MYSQL)
     DBSession = scoped_session(sessionmaker(bind=engine))
 
     Base.metadata.create_all(engine)

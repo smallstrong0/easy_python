@@ -2,6 +2,10 @@
 # -*- coding: utf-8 -*-
 from contextlib import contextmanager
 import logging
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
 from lib.model.model import *
 from setting import MYSQL
 from sqlalchemy.ext.declarative.api import DeclarativeMeta
@@ -19,6 +23,17 @@ class cli:
         self.engine = create_engine(MYSQL, encoding='utf-8', pool_size=50, pool_recycle=3600)
         self.DBSession = sessionmaker(bind=self.engine)
         # self.DBSession = scoped_session(sessionmaker(bind=self.engine))  # 一个线程内只有一个session
+
+    def session_maker(self, session=None):
+        code = 0
+        try:
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            code = -1
+        finally:
+            session.close()
+        return code
 
     def create_partial_session(self):
         '''

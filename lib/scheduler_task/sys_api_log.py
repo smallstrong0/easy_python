@@ -75,7 +75,7 @@ def deal_sys_log(msg_dict):
         user_id=user_id,
         result=result
     )
-    code = mysql_rds.add(data_obj=api_log, session=session)
+    code = mysql_rds.add(data_obj=api_log)
     if code != 0:
         error = com_const_error.CommonErrorType.UNEXCEPT_ERROR.value
     if error is None:

@@ -25,3 +25,7 @@ def get_test_cache(key):
 
 def delete_test_cache(key):
     redis_client.delete_cache(key=TestRedis.UNIQUE_KEY.format(key))
+
+
+if __name__ == '__main__':
+    set_test_cache('1','1')

@@ -7,12 +7,12 @@ from functools import wraps
 from tornado.escape import json_decode
 from tornado.web import RequestHandler, HTTPError, os
 from lib.common import error
+from lib.common.format import AlchemyJsonEncoder
 from lib.common.aliyun_mysql import mysql_rds
 from lib.common.error import CommonErrorType, BMCError
-from lib.common.utils import session_context_manage, get_time, get_ms
+from lib.common.utils import session_context_manage, get_time, get_ms,get_ts,deserialize
 from lib.common.redis_queue import RedisQueue
 from lib.common.const import REDIS_QUEUE_NAME
-
 queue = RedisQueue(queue_name=REDIS_QUEUE_NAME['sys_api_log'])
 
 
@@ -111,10 +111,10 @@ class BaseHandler(RequestHandler):
         self.finish(json.dumps(chunk, cls=AlchemyJsonEncoder, ensure_ascii=False))
 
     def push_api_log(self, chunk):
-        ts = comm_func.get_ts()
-        time_consuming = comm_func.get_ms() - self.ts_ms_in
+        ts = get_ts()
+        time_consuming = get_ms() - self.ts_ms_in
         date_time_in = self.date_time_in
-        date_time_out = comm_func.get_time()
+        date_time_out = get_time()
         method = self.request.method
         url = '{}{}'.format(self.request.host, self.request.uri)
         try:
@@ -126,7 +126,7 @@ class BaseHandler(RequestHandler):
         params = {}
         if self.request.arguments:
             params.update({elem[0]: elem[1][0].decode() for elem in self.request.arguments.items()})
-        body = comm_func.deserialize(self.request.body) or {}
+        body = deserialize(self.request.body) or {}
         response = chunk
 
         msg_dict = {
