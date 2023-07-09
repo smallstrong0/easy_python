@@ -9,9 +9,10 @@ import configparser
 from string import Template
 import time
 import os
+import re
 
 config = configparser.ConfigParser()
-config.read("killer.ini")
+config.read("killer.ini", encoding='utf-8')
 SETTING_DIC = {}
 for i in config.items():
     key = i[0]
@@ -20,6 +21,41 @@ for i in config.items():
         dic[k[0]] = k[1]
     SETTING_DIC[key] = dic
 print(SETTING_DIC)
+
+
+def find_start_num():
+    input_str = ''
+    with open('./lib/common/error.py', 'r', encoding='utf-8') as f:
+        for line in f.readlines():
+            line = line.strip()
+            input_str += line
+
+    pattern = re.compile(r"\d+")
+    s = pattern.finditer(input_str)
+    tmp = []
+    for i in s:
+        tmp.append((i.group(), i.regs[0]))
+    # 求出最大的数及对应下标
+    max_int = max(map(int, [c[0] for c in tmp]))
+    tmp = [i for i in tmp if i[0] == str(max_int)]
+    find = []
+    for t in tmp:
+        inx = t[1][1]
+        xiaoshu = ""
+        _f = t[0]
+        if len(input_str) != inx and input_str[inx] == ".":
+            _inx = inx
+            for c in range(len(input_str[inx + 1:])):
+                if input_str[_inx + 1].isdigit():
+                    _inx += 1
+                else:
+                    break
+            xiaoshu = input_str[inx + 1:_inx + 1]
+        if xiaoshu:
+            _f = t[0] + "." + xiaoshu
+        find.append(_f)
+    find = max(map(float, find))
+    return (int(int(find) / 100) + 1) * 100
 
 
 def str_hump(text):
@@ -42,29 +78,29 @@ TABLE = table.upper()
 Table = str_hump(table)
 CREATE_BY = SETTING_DIC['CORE']['create_by']
 VIEW_PATH = SETTING_DIC['VIEW']['path']
-VIEW_MODULE = SETTING_DIC['VIEW']['module']
+VIEW_MODULE = table
 DAP_PATH = SETTING_DIC['DAP']['path']
 DAO_PATH = SETTING_DIC['DAO']['path']
 REDIS_KEY_PATH = SETTING_DIC['DAO']['redis_key_path']
 TEST_PATH = SETTING_DIC['TEST']['path']
-TEST_MODULE = SETTING_DIC['TEST']['module']
+TEST_MODULE = table
 ERROR_PATH = SETTING_DIC['ERROR']['path']
-CODE_START = int(SETTING_DIC['ERROR']['code_start'])
-TABLE_NAME = str(SETTING_DIC['ERROR']['table_name'])
+TABLE_NAME = str(SETTING_DIC['CORE']['table_name'])
 VERSION = str(SETTING_DIC['API']['version'])
-MODULE = str(SETTING_DIC['API']['module'])
+MODULE = table
 FUNCTION = str(SETTING_DIC['API']['func'])
 VIEW_URL_PATH = str(SETTING_DIC['API']['url_path'])
-IMPORT_POS = int(SETTING_DIC['API']['url_import_pos'])
-ROUTE_POS = int(SETTING_DIC['API']['url_route_pos'])
-CREATE_MODE = str(SETTING_DIC['CREATE_MODE']['module'])
+IMPORT_POS = 2
+ROUTE_POS = 0
+CREATE_MODE = str(SETTING_DIC['CREATE_MODE']['mode'])
+CODE_START = find_start_num()
 
 
 # Template使用参考 https://www.cnblogs.com/subic/p/6552752.html
 def writer_master(template_path, output_path, data_dic):
     lines = []
-    class_file = open(output_path, "wt")
-    template_file = open(template_path, 'r')
+    class_file = open(output_path, "wt", encoding='utf-8')
+    template_file = open(template_path, 'r', encoding='utf-8')
     lines.append(Template(template_file.read()).safe_substitute(data_dic))
     class_file.writelines(lines)
     class_file.close()
@@ -85,6 +121,7 @@ def create_view():
             'version': VERSION,
             'module': MODULE,
             'func': FUNCTION,
+            'table_name': TABLE_NAME,
         }
     )
     if not os.path.exists('{}{}/__init__.py'.format(VIEW_PATH, VIEW_MODULE)):
@@ -104,7 +141,31 @@ def create_view():
         with open('{}{}/__init__.py'.format(VIEW_PATH, VIEW_MODULE), encoding="utf-8", mode="a") as file:
             file.write('\nfrom .{} import *'.format(table))
             view_import = False
+    with open(VIEW_URL_PATH, "r+", encoding="u8") as fp:
+        header = ''
+        body = ''
+        footer = ''
+        for i, d in enumerate(fp.readlines(), start=1):
+            if i <= IMPORT_POS:
+                header += d
+            # elif IMPORT_POS < i < ROUTE_POS:
+            #     body += d
 
+            else:
+                if d == ']\n':
+                    pass
+                else:
+                    body += d
+
+        fp.seek(0)  # 回到初始点
+        fp.write(header)
+        if view_import:
+            fp.write("import handler.api.{} as {}".format(VIEW_MODULE, VIEW_MODULE) + "\n")
+        fp.write(body)
+        fp.write("    [r'/{}/{}', {}.{}Handler],".format(MODULE, FUNCTION, VIEW_MODULE, Table) + "\n")
+        fp.write("    [r'/{}/{}/list', {}.{}ListHandler],".format(MODULE, FUNCTION, VIEW_MODULE, Table) + "\n")
+        fp.write("]" + "\n")
+        # fp.write(footer)
 
 
 def create_test():
@@ -132,6 +193,7 @@ def create_test():
                 'CREATE_TIME': CREATE_TIME,
             }
         )
+
 
 def create_dap():
     writer_master(

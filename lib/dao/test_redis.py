@@ -7,7 +7,7 @@
 
 from lib.common.redis_key import TestRedis
 from lib.common.redis_util import redis_client
-from lib.common.utils import serialize, deserialize
+from lib.common.func import serialize, deserialize
 
 
 def set_test_cache(key, data):

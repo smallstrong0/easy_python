@@ -34,7 +34,7 @@ def main():
         print(options.subpath)
     # 定时任务
     start_scheduler()
-    io_loop = tornado.ioloop.IOLoop.instance()
+    io_loop = tornado.ioloop.IOLoop.current()
     # Star application
     http_server = tornado.httpserver.HTTPServer(app, xheaders=True)
     # http_server.listen(options.port)

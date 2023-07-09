@@ -9,7 +9,7 @@ import lib.dao.test_mysql as test_mysql
 import lib.dao.test_redis as test_redis
 import lib.common.const as com_const
 import lib.common.error as error_const
-import lib.common.utils as com_utils
+import lib.common.func as com_func
 from sqlalchemy import create_engine, or_, and_, any_, text, exists, func, distinct, between
 
 from lib.model.model import Test

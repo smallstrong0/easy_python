@@ -5,7 +5,7 @@
 # @Time: 2020-09-16 16:53:17
 # @File: test_mysql.py
 
-from lib.common.error import TestErrorType,BMCError
+from lib.common.error import TestErrorType,CommonError
 from lib.common.aliyun_mysql import mysql_rds
 from lib.model.model import Test
 
@@ -13,31 +13,31 @@ from lib.model.model import Test
 def add_test(data_obj):
     code = mysql_rds.add(data_obj=data_obj)
     if code == -1:
-        raise BMCError(TestErrorType.TEST_ADD_ERROR.value)
+        raise CommonError(TestErrorType.TEST_ADD_ERROR.value)
 
 
 def bulk_add_test(data_list):
     code = mysql_rds.bulk_insert(table=Test, data_list=data_list)
     if code == -1:
-        raise BMCError(TestErrorType.TEST_BULK_ADD_ERROR.value)
+        raise CommonError(TestErrorType.TEST_BULK_ADD_ERROR.value)
 
 
 def delete_test(filters):
     code = mysql_rds.delete(table=Test, filters=filters)
     if code == -1:
-        raise BMCError(TestErrorType.TEST_DELETE_ERROR.value)
+        raise CommonError(TestErrorType.TEST_DELETE_ERROR.value)
 
 
 def update_test(filters, data_dict):
     code = mysql_rds.update(table=Test, filters=filters, data_dict=data_dict)
     if code == -1:
-        raise BMCError(TestErrorType.TEST_UPDATE_ERROR.value)
+        raise CommonError(TestErrorType.TEST_UPDATE_ERROR.value)
 
 
 def bulk_update_test(data_list):
     code = mysql_rds.bulk_update(table=Test, data_list=data_list)
     if code == -1:
-        raise BMCError(TestErrorType.TEST_BULK_UPDATE_ERROR.value)
+        raise CommonError(TestErrorType.TEST_BULK_UPDATE_ERROR.value)
 
 
 def get_test(query_list=[], join=[], join_two=[], join_three=[], filters=[], group_by=[], order_by=[]):

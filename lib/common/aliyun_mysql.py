@@ -9,7 +9,8 @@ from sqlalchemy.orm import sessionmaker
 from lib.model.model import *
 from setting import MYSQL
 from sqlalchemy.ext.declarative.api import DeclarativeMeta
-from lib.common.utils import session_context_manage
+from lib.common.func import session_context_manage
+import logging, functools, datetime
 
 
 class cli:

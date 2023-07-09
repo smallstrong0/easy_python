@@ -9,25 +9,19 @@
 
 
 import lib.common.error as com_const_error
-import lib.common.utils as func
+import lib.common.func as func
 import lib.common.aliyun_mysql
 from lib.common.redis_queue import RedisQueue
 from lib.common.const import REDIS_QUEUE_NAME
 import traceback
 from lib.model.model import ApiLog
 
-DELETE_TS = func.get_ts() - 90 * 86400
 mysql_rds = lib.common.aliyun_mysql.mysql_rds
 queue = RedisQueue(queue_name=REDIS_QUEUE_NAME['sys_api_log'])
 queue_error = RedisQueue(queue_name=REDIS_QUEUE_NAME['sys_api_log_error'])
 
 
 def sys_log():
-    mysql_rds.get_session()
-    mysql_rds.delete(table=ApiLog, filters={
-        ApiLog.ctime < DELETE_TS
-    })
-    mysql_rds.finish()
     while 1:
         for msg in queue.consume():
             try:
@@ -46,7 +40,7 @@ def deal_sys_log(msg_dict):
     error = None
     session = mysql_rds.get_session()
     ctime = msg_dict['ctime']
-    mtime = msg_dict['mtime']
+    url_index = msg_dict['url_index']
     time_consuming = msg_dict['time_consuming']
     params = func.serialize(msg_dict['params'])
     body = func.serialize(msg_dict['body'])
@@ -61,9 +55,10 @@ def deal_sys_log(msg_dict):
     method = msg_dict['method']
     url = msg_dict['url']
     user_id = msg_dict['user_id']
+
     api_log = ApiLog(
         ctime=int(ctime),
-        mtime=int(mtime),
+        url_index=str(url_index),
         time_consuming=int(time_consuming),
         params=params,
         body=body,

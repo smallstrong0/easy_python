@@ -16,13 +16,5 @@ LOGIC_PREFIX = '{}:{}:'.format(PROJECT, LOGIC_TYPE)  # 作为硬逻辑判断的c
 # key 组成
 # project:type:table:unique_key (unique_key大部分清空下就是主键)
 
-
-class DemoRedis(object):
-    UNIQUE_KEY = PREFIX + "demo:" + '{}'
-    EX = 86400 * 15 + random.randint(1800, 3600)
-
-
-# 测试相关
-class TestRedis(object):
-    UNIQUE_KEY = PREFIX + "test:"+'{}'
-    EX = 86400 * 15 + random.randint(1800, 3600)
+class SequenceRedis(object):
+    SEQUENCE_ID = "sequence_id:" + '{}'

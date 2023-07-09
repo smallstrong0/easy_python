@@ -16,8 +16,10 @@ define('MNS', group='Webserver', type=tuple, default='', help='MNS setting')
 define('ENVIRONMENT_AWARE', group='Webserver', type=str, default='', help='get_id')
 tornado.options.parse_config_file('setting.py')
 
-
 from url import urls
+
+for u in urls:
+    u[0] = options.subpath + u[0]
 app = tornado.web.Application(
     handlers=urls,
     template_path=os.path.join(os.path.dirname(__file__), "template"),
@@ -25,4 +27,3 @@ app = tornado.web.Application(
     debug=True,
     allow_remote_access=True
 )
-

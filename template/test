@@ -23,7 +23,18 @@ class Test${Table}(unittest.TestCase):
         url = '{}{}'.format(BASE_URL, '/banji-api/${module}/${func}')
         body = {
         }
-        body.update(PUBLIC_PARAMS['bmc']) # 公共参数抽取,自行修改接口调用的角色
+
+        params_url = ''
+        params = {
+        }
+        params.update(PUBLIC_PARAMS['bmc'])
+        for key in params:
+            params_url = params_url + '{}={}&'.format(key, params[key])
+        if params_url.endswith('&'):
+            params_url = params_url[0:len(params_url) - 1]
+        url = url + '?' + params_url
+
+        # body.update(PUBLIC_PARAMS['bmc']) # 公共参数抽取,自行修改接口调用的角色
         resp = requests.post(url=url, json=body)
         if resp.status_code == 200 and resp.text:
             data = json.loads(resp.text)
@@ -35,7 +46,18 @@ class Test${Table}(unittest.TestCase):
         url = '{}{}'.format(BASE_URL, '/banji-api/${module}/${func}')
         body = {
         }
-        body.update(PUBLIC_PARAMS['bmc']) # 公共参数抽取,自行修改接口调用的角色
+
+        params_url = ''
+        params = {
+        }
+        params.update(PUBLIC_PARAMS['bmc'])
+        for key in params:
+            params_url = params_url + '{}={}&'.format(key, params[key])
+        if params_url.endswith('&'):
+            params_url = params_url[0:len(params_url) - 1]
+        url = url + '?' + params_url
+
+        # body.update(PUBLIC_PARAMS['bmc']) # 公共参数抽取,自行修改接口调用的角色
         resp = requests.put(url=url, json=body)
         if resp.status_code == 200 and resp.text:
             data = json.loads(resp.text)
@@ -83,7 +105,18 @@ class Test${Table}(unittest.TestCase):
         url = '{}{}'.format(BASE_URL, '/banji-api/${module}/${func}')
         body = {
         }
-        body.update(PUBLIC_PARAMS['bmc']) # 公共参数抽取,自行修改接口调用的角色
+
+        params_url = ''
+        params = {
+        }
+        params.update(PUBLIC_PARAMS['bmc'])
+        for key in params:
+            params_url = params_url + '{}={}&'.format(key, params[key])
+        if params_url.endswith('&'):
+            params_url = params_url[0:len(params_url) - 1]
+        url = url + '?' + params_url
+
+        # body.update(PUBLIC_PARAMS['bmc']) # 公共参数抽取,自行修改接口调用的角色
         resp = requests.delete(url=url, json=body)
         if resp.status_code == 200 and resp.text:
             data = json.loads(resp.text)

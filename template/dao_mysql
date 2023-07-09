@@ -5,7 +5,7 @@
 # @Time: ${CREATE_TIME}
 # @File: ${table}_mysql.py
 
-from lib.common.error import ${Table}ErrorType,BMCError
+from lib.common.error import ${Table}ErrorType,CommonError
 from lib.common.aliyun_mysql import mysql_rds
 from lib.model.model import ${Table}
 
@@ -13,31 +13,31 @@ from lib.model.model import ${Table}
 def add_${table}(data_obj):
     code = mysql_rds.add(data_obj=data_obj)
     if code == -1:
-        raise BMCError(${Table}ErrorType.${TABLE}_ADD_ERROR.value)
+        raise CommonError(${Table}ErrorType.${TABLE}_ADD_ERROR.value)
 
 
 def bulk_add_${table}(data_list):
     code = mysql_rds.bulk_insert(table=${Table}, data_list=data_list)
     if code == -1:
-        raise BMCError(${Table}ErrorType.${TABLE}_BULK_ADD_ERROR.value)
+        raise CommonError(${Table}ErrorType.${TABLE}_BULK_ADD_ERROR.value)
 
 
 def delete_${table}(filters):
     code = mysql_rds.delete(table=${Table}, filters=filters)
     if code == -1:
-        raise BMCError(${Table}ErrorType.${TABLE}_DELETE_ERROR.value)
+        raise CommonError(${Table}ErrorType.${TABLE}_DELETE_ERROR.value)
 
 
 def update_${table}(filters, data_dict):
     code = mysql_rds.update(table=${Table}, filters=filters, data_dict=data_dict)
     if code == -1:
-        raise BMCError(${Table}ErrorType.${TABLE}_UPDATE_ERROR.value)
+        raise CommonError(${Table}ErrorType.${TABLE}_UPDATE_ERROR.value)
 
 
 def bulk_update_${table}(data_list):
     code = mysql_rds.bulk_update(table=${Table}, data_list=data_list)
     if code == -1:
-        raise BMCError(${Table}ErrorType.${TABLE}_BULK_UPDATE_ERROR.value)
+        raise CommonError(${Table}ErrorType.${TABLE}_BULK_UPDATE_ERROR.value)
 
 
 def get_${table}(query_list=[], join=[], join_two=[], join_three=[], filters=[], group_by=[], order_by=[]):

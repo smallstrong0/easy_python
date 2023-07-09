@@ -152,6 +152,10 @@ class RedisClient:
     def decrby(self, k, amount):
         return self.session.decrby(k, amount)
 
+    def incr_amount(self, k, amount):
+        return self.session.incr(k, amount)
+
+
     def acquire_lock(self, lock_name, acquire_time=5, time_out=5):
         """获取一个分布式锁"""
         identifier = str(uuid.uuid4())

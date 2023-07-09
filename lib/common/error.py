@@ -8,16 +8,16 @@ status_0 = dict(status_code=405, reason='Method not allowed.')
 status_1 = dict(status_code=404, reason='API not found.')
 
 
-class BMCError(HTTPError):
+class CommonError(HTTPError):
     def __init__(self, error):
         if isinstance(error, tuple) and len(error) == 2:
             pass
         else:
             raise Exception('error must tuple and length is two')
-        super(BMCError, self).__init__(
+        super(CommonError, self).__init__(
             200
         )
-        self.bmc_error = error
+        self.common_error = error
 
 
 class CommonErrorType(Enum):

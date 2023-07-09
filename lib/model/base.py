@@ -32,3 +32,4 @@ class BaseModel(Base):
     mtime = Column(Integer, nullable=False, comment='修改时间')
     create_by = Column(BigInteger, nullable=False, default=0, comment='创建人')
     update_by = Column(BigInteger, nullable=False, default=0, comment='更新人')
+    is_delete = Column(Integer, default=0, comment='1 已经删除 0 未删除')

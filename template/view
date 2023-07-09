@@ -7,32 +7,24 @@
 
 
 import lib.dap.${table}
-import lib.common.utils
-
-from handler.base import BaseHandler, check_signature
+import lib.common.func as com_func
+from handler.base import BaseHandler
 from tornado import gen
 
 
 class ${Table}ListHandler(BaseHandler):
-    # @check_signature
-    @gen.coroutine
-    def get(self):
+    def post(self):
         """
-        @api {GET} /${module}/${func}/list todo: func list desc
+        @api {POST} /${module}/${func}/list   ${table_name}列表
         @apiGroup ${module}
         @apiVersion  ${version}
 
-        @apiDescription  系统:斑集后台、app、小程序<br>
-                         模块：todo sub_desc <br>
-                         功能：todo sub_desc
 
-        @apiParam {Int} todo  params todo
         @apiParam {Int} page  页码
         @apiParam {Int} pagesize  每页多少条
 
         @apiSuccessExample {json} Request Example
         {
-            "todo": 'req params todo',
             "user_id": 1789900001,
             "page": 1,
             "pagesize": 10,
@@ -44,7 +36,6 @@ class ${Table}ListHandler(BaseHandler):
             "data": {
                 "data_list": [
                     {
-                        "todo": 'resp params todo',
                     }
                 ],
                 "total_page": 2,
@@ -61,7 +52,7 @@ class ${Table}ListHandler(BaseHandler):
             "page": 1,
             "pagesize": 10,
         }
-        error, params = lib.common.utils.get_params_verify_sig(self.request, keys)
+        params, error = com_func.get_params_verify_sig(self.request, keys)
         if error is None:
             error, data = lib.dap.${table}.get_${table}_list(params)
             self.write_json(error, data)
@@ -70,32 +61,122 @@ class ${Table}ListHandler(BaseHandler):
 
 
 class ${Table}Handler(BaseHandler):
-    # @check_signature
     @gen.coroutine
-    def get(self):
+    def post(self):
         """
-        @api {GET} /${module}/${func}  todo: get func desc
+        @api {POST} /${module}/${func}  ${table_name}添加
         @apiGroup ${module}
         @apiVersion  ${version}
 
-        @apiDescription  系统:斑集后台、app、小程序<br>
-                         模块：todo sub_desc <br>
-                         功能：todo sub_desc
 
         @apiParam {Int} user_id  用户ID
-        @apiParam {Int} todo  params todo
 
 
         @apiSuccessExample {json} Request Example
         {
             "user_id": 1789900001,
-            "todo": 'req params todo',
+        }
+        @apiSuccessExample  {json} Response-Example
+        {
+            "code": 0,
+            "data": {}
+        }
+        """
+        keys = {
+            'user_id': None,
+            'ts': None,
+            'nonce': None,
+        }
+        params, error = com_func.get_params_verify_sig(self.request, keys)
+        if error is None:
+            error, data = lib.dap.${table}.add_${table}(params)
+            self.write_json(error, data)
+        else:
+            self.write_json(error)
+
+    @gen.coroutine
+    def put(self):
+        """
+        @api {PUT} /${module}/${func}  ${table_name}修改
+        @apiGroup ${module}
+        @apiVersion  ${version}
+
+
+        @apiParam {Int} user_id  用户ID
+
+        @apiSuccessExample {json} Request Example
+        {
+            "user_id": 1789900001,
+        }
+        @apiSuccessExample  {json} Response-Example
+        {
+            "code":0,
+            "data": {}
+        }
+        """
+        keys = {
+            'user_id': None,
+            'ts': None,
+            'nonce': None,
+        }
+        params, error = com_func.get_params_verify_sig(self.request, keys)
+        if error is None:
+            error, data = lib.dap.${table}.update_${table}(params)
+            self.write_json(error, data)
+        else:
+            self.write_json(error)
+
+    @gen.coroutine
+    def delete(self):
+        """
+        @api {DELETE} /${module}/${func}  ${table_name}删除
+        @apiGroup ${module}
+        @apiVersion  ${version}
+
+
+        @apiParam {Int} user_id  用户ID
+
+        @apiSuccessExample {json} Request Example
+        {
+            "user_id": 1789900001,
+        }
+        @apiSuccessExample  {json} Response-Example
+        {
+            "code":0,
+            "data": {}
+        }
+        """
+        keys = {
+            'user_id': None,
+            'ts': None,
+            'nonce': None,
+        }
+        params, error = com_func.get_params_verify_sig(self.request, keys)
+        if error is None:
+            error, data = lib.dap.${table}.delete_${table}(params)
+            self.write_json(error, data)
+        else:
+            self.write_json(error)
+
+    @gen.coroutine
+    def get(self):
+        """
+        @api {GET} /${module}/${func}  ${table_name}详情
+        @apiGroup ${module}
+        @apiVersion  ${version}
+
+
+        @apiParam {Int} user_id  用户ID
+
+
+        @apiSuccessExample {json} Request Example
+        {
+            "user_id": 1789900001,
         }
         @apiSuccessExample  {json} Response-Example
         {
             "code": 0,
             "data": {
-                "todo": 'resp params todo',
             }
         }
         """
@@ -104,124 +185,9 @@ class ${Table}Handler(BaseHandler):
             'ts': None,
             'nonce': None,
         }
-        error, params = lib.common.utils.get_params_verify_sig(self.request, keys)
+        params, error = com_func.get_params_verify_sig(self.request, keys)
         if error is None:
             error, data = lib.dap.${table}.get_${table}(params)
-            self.write_json(error, data)
-        else:
-            self.write_json(error)
-
-    # @check_signature
-    @gen.coroutine
-    def post(self):
-        """
-        @api {POST} /${module}/${func}  todo: add func desc
-        @apiGroup ${module}
-        @apiVersion  ${version}
-
-        @apiDescription  系统:斑集后台、app、小程序<br>
-                         模块：todo sub_desc <br>
-                         功能：todo sub_desc
-
-        @apiParam {Int} user_id  用户ID
-        @apiParam {Int} todo  params todo
-
-
-        @apiSuccessExample {json} Request Example
-        {
-            "user_id": 1789900001,
-            "todo": 'req params todo',
-        }
-        @apiSuccessExample  {json} Response-Example
-        {
-            "code": 0,
-            "data": {}
-        }
-        """
-        keys = {
-            'user_id': None,
-            'ts': None,
-            'nonce': None,
-        }
-        error, params = lib.common.utils.get_params_verify_sig(self.request, keys)
-        if error is None:
-            error, data = lib.dap.${table}.add_${table}(params)
-            self.write_json(error, data)
-        else:
-            self.write_json(error)
-
-    # @check_signature
-    @gen.coroutine
-    def put(self):
-        """
-        @api {PUT} /${module}/${func}  todo: update func desc
-        @apiGroup ${module}
-        @apiVersion  ${version}
-
-        @apiDescription  系统:斑集后台、app、小程序<br>
-                         模块：todo sub_desc <br>
-                         功能：todo sub_desc
-
-        @apiParam {Int} user_id  用户ID
-        @apiParam {Int} todo  params todo
-
-        @apiSuccessExample {json} Request Example
-        {
-            "user_id": 1789900001,
-            "todo": 'req params todo'
-        }
-        @apiSuccessExample  {json} Response-Example
-        {
-            "code":0,
-            "data": {}
-        }
-        """
-        keys = {
-            'user_id': None,
-            'ts': None,
-            'nonce': None,
-        }
-        error, params = lib.common.utils.get_params_verify_sig(self.request, keys)
-        if error is None:
-            error, data = lib.dap.${table}.update_${table}(params)
-            self.write_json(error, data)
-        else:
-            self.write_json(error)
-
-    # @check_signature
-    @gen.coroutine
-    def delete(self):
-        """
-        @api {DELETE} /${module}/${func}  todo: delete func desc
-        @apiGroup ${module}
-        @apiVersion  ${version}
-
-        @apiDescription  系统:斑集后台、app、小程序<br>
-                         模块：todo sub_desc <br>
-                         功能：todo sub_desc
-
-        @apiParam {Int} user_id  用户ID
-        @apiParam {Int} todo  params todo
-
-        @apiSuccessExample {json} Request Example
-        {
-            "user_id": 1789900001,
-            "todo": 'req params todo'
-        }
-        @apiSuccessExample  {json} Response-Example
-        {
-            "code":0,
-            "data": {}
-        }
-        """
-        keys = {
-            'user_id': None,
-            'ts': None,
-            'nonce': None,
-        }
-        error, params = lib.common.utils.get_params_verify_sig(self.request, keys)
-        if error is None:
-            error, data = lib.dap.${table}.delete_${table}(params)
             self.write_json(error, data)
         else:
             self.write_json(error)

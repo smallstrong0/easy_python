@@ -8,12 +8,12 @@
 
 import redis
 from setting import REDIS
-from lib.common.utils import serialize, deserialize
+from lib.common.func import serialize, deserialize
 
 
 class RedisQueue(object):
 
-    def __init__(self, queue_name):
+    def __init__(self, queue_name=''):
         self.queue_name = queue_name
         self.__redis = redis.StrictRedis(host=REDIS['HOST'], port=REDIS['PORT'], password=REDIS['PASSWORD'],
                                          db=REDIS['DB'], socket_connect_timeout=5,
@@ -57,6 +57,9 @@ class RedisQueue(object):
 
     def put(self, msg):
         self.__redis.rpush(self.key, serialize(msg))
+
+    def put_queue(self, key, msg):
+        self.__redis.rpush(key, serialize(msg))
 
 
 if __name__ == '__main__':

@@ -8,7 +8,7 @@
 import lib.dao.test
 import lib.common.const as com_const
 import lib.common.error as error_const
-import lib.common.utils as com_utils
+import lib.common.func as com_func
 
 
 def add_test(params):

@@ -21,19 +21,24 @@ from lib.model.base import Base, BaseModel
 """
 
 
-class ApiLog(BaseModel):
+class ApiLog(Base):
     __tablename__ = "api_log"
     __doc__ = '接口log'
     log_id = Column(BigInteger, primary_key=True, autoincrement=True, comment='日志主键')
+    ctime = Column(Integer, nullable=False, comment='创建时间')
+    date_time_in = Column(String(30), nullable=False, default='', comment='调用时间')
+    date_time_out = Column(String(30), nullable=False, default='', comment='返回时间')
     time_consuming = Column(Integer, nullable=False, default=0, comment='接口耗时 单位毫秒')
+
+    url_index = Column(String(256), nullable=False, default='', index=True, comment='url index')
+    method = Column(String(10), nullable=False, default='', comment='http method')
+
+    url = Column(String(1024), nullable=False, default='', comment='http path url')
     params = Column(String(1024), nullable=False, default='{}', comment='url参数')
     body = Column(Text, nullable=False, default='{}', comment='body参数')
     response = Column(Text, nullable=False, default='{}', comment='返回结果')
-    date_time_in = Column(String(30), nullable=False, default='', comment='调用时间')
-    date_time_out = Column(String(30), nullable=False, default='', comment='返回时间')
-    method = Column(String(10), nullable=False, default='', comment='http method')
-    url = Column(String(1024), nullable=False, default='', comment='http path url')
-    user_id = Column(BigInteger, nullable=False, comment='登录用户的user_id')
+
+    user_id = Column(BigInteger, nullable=False, index=True, comment='登录用户的user_id')
     result = Column(String(10), nullable=False, default='SUCCESS', comment='结果')
 
 
