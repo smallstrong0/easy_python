@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # @Author: ss
-# @Time: 2020-09-16 16:53:17
+# @Time: 2023-07-11 16:06:08
 # @File: test_mysql.py
 
 from lib.common.error import TestErrorType,CommonError

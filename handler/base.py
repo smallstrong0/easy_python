@@ -12,7 +12,7 @@ from lib.common.format import AlchemyJsonEncoder
 from lib.common.aliyun_mysql import mysql_rds
 from lib.common.error import CommonErrorType, CommonError
 from lib.common.func import session_context_manage, get_time, get_ms, get_ts, deserialize, get_params_verify_sig, \
-    get_mq_redis_context_manage, set_mq_redis_context_manage,get_params_without_sig
+    get_mq_redis_context_manage, set_mq_redis_context_manage, get_params_without_sig
 from lib.common.redis_queue import RedisQueue
 from lib.common.const import REDIS_QUEUE_NAME
 from handler import ylc_thread_pool
@@ -38,6 +38,7 @@ class BaseHandler(RequestHandler):
 
     def _create_session(self):
         session = mysql_rds.create_session()
+        # print('session id is {}'.format(id(session)))
         session_context_manage.set(session)
 
     def _mq_redis(self):
@@ -170,7 +171,7 @@ class BaseHandler(RequestHandler):
     def async_task(self, keys={}, task_func=None, sig=True):
         return IOLoop.current().run_in_executor(ylc_thread_pool, self.do_task, keys, task_func, sig)
 
-    def do_task(self, keys, task_func, sig):
+    async def do_task(self, keys, task_func, sig):
         try:
             mysql_rds.get_session()
             data = {}
@@ -180,14 +181,16 @@ class BaseHandler(RequestHandler):
                 error, params = get_params_without_sig(self.request, keys)
             if error is None:
                 params['remote_ip'] = self.request.remote_ip
-                error, data = task_func(params)
+                error, data = await task_func(params)
         except Exception as e:
             traceback.print_exc()
             mysql_rds.rollback()
             error = e.common_error if hasattr(e, 'common_error') else (-1, '未知异常，请联系客服')
             data = {}
         finally:
+            # print('session id is {}'.format(id(mysql_rds.get_session())))
             mysql_rds.close()
+
         return error, data
 
 

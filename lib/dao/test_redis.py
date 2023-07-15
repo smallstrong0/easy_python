@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # @Author: ss
-# @Time: 2020-09-16 16:53:17
+# @Time: 2023-07-11 16:06:08
 # @File: test_redis.py
 
 from lib.common.redis_key import TestRedis
@@ -25,7 +25,3 @@ def get_test_cache(key):
 
 def delete_test_cache(key):
     redis_client.delete_cache(key=TestRedis.UNIQUE_KEY.format(key))
-
-
-if __name__ == '__main__':
-    set_test_cache('1','1')

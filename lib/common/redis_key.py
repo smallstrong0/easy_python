@@ -18,3 +18,9 @@ LOGIC_PREFIX = '{}:{}:'.format(PROJECT, LOGIC_TYPE)  # 作为硬逻辑判断的c
 
 class SequenceRedis(object):
     SEQUENCE_ID = "sequence_id:" + '{}'
+
+
+# 测试相关
+class TestRedis(object):
+    UNIQUE_KEY = PREFIX + "test:"+'{}'
+    EX = 86400 * 15 + random.randint(1800, 3600)
