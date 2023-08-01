@@ -12,7 +12,7 @@ import lib.common.func as com_func
 from lib.model.model import Test
 from lib.common.error import TestErrorType, CommonError
 import lib.dao.sequence
-from handler import ylc_thread_pool, service_thread_pool
+from handler import ylc_thread_pool
 from lib.common.aliyun_mysql import mysql_rds
 from tornado.ioloop import IOLoop
 import asyncio

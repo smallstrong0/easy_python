@@ -44,17 +44,17 @@ def get_test(query_list=[], join=[], join_two=[], join_three=[], filters=[], gro
     return mysql_rds.find_one(query_list=query_list, join=join, join_two=join_two, join_three=join_three, filters=filters, group_by=group_by ,order_by=order_by)
 
 
-def get_test_list(query_list=[], join=[], join_two=[], join_three=[], outerjoin=[], filters=[], group_by=[], order_by=[], limit=0, offset=0):
+def get_test_list(query_list=[], join=[], join_two=[], join_three=[], outerjoin=[], filters=[], group_by=[],having=[], order_by=[], limit=0, offset=0):
     return mysql_rds.find_list(query_list=query_list, join=join, join_two=join_two, join_three=join_three,
-                               outerjoin=outerjoin, filters=filters, group_by=group_by, order_by=order_by,
+                               outerjoin=outerjoin, filters=filters, group_by=group_by, having=having, order_by=order_by,
                                limit=limit,
                                offset=offset)
 
 
-def get_test_list_count(query_list=[], join=[], join_two=[], join_three=[], outerjoin=[], filters=[], group_by=[],
+def get_test_list_count(query_list=[], join=[], join_two=[], join_three=[], outerjoin=[], filters=[], group_by=[],having=[],
                         order_by=[]):
     return mysql_rds.count(query_list=query_list, join=join, join_two=join_two, join_three=join_three,
-                           outerjoin=outerjoin, filters=filters, group_by=group_by, order_by=order_by)
+                           outerjoin=outerjoin, filters=filters, group_by=group_by, having=having, order_by=order_by)
 
 
 def sql_execute(sql_str):

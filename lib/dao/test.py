@@ -10,7 +10,7 @@ import lib.dao.test_redis as test_redis
 import lib.common.const as com_const
 import lib.common.error as error_const
 import lib.common.func as com_func
-from sqlalchemy import create_engine, or_, and_, any_, text, exists, func, distinct, between
+from sqlalchemy import create_engine, or_, and_, any_, text, exists, func, distinct, between, case
 
 from lib.model.model import Test
 
