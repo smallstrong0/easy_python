@@ -1,15 +1,14 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 from contextlib import contextmanager
-from sqlalchemy.ext.asyncio import create_async_engine
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.ext.asyncio import async_sessionmaker
-from sqlalchemy import select
+import logging
 
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 from lib.model.model import *
 from setting import MYSQL
-from sqlalchemy.orm.decl_api import DeclarativeMeta
+from sqlalchemy.orm import DeclarativeMeta
 from lib.common.func import session_context_manage
 import logging, functools, datetime
 
@@ -20,8 +19,11 @@ class cli:
     '''
 
     def __init__(self):
-        self.engine = create_async_engine(MYSQL, pool_size=50, pool_recycle=3600,echo=True)
-        self.DBSession = async_sessionmaker(bind=self.engine, class_=AsyncSession)
+        # self.engine = create_engine(MYSQL, encoding='utf-8', pool_size=50, pool_recycle=3600, echo=True,
+        #                             echo_pool=True)
+        self.engine = create_engine(MYSQL, pool_size=50, pool_recycle=3600)
+        self.DBSession = sessionmaker(bind=self.engine)
+        # self.DBSession = scoped_session(sessionmaker(bind=self.engine))  # 一个线程内只有一个session
 
     def session_maker(self, session=None):
         code = 0
@@ -70,7 +72,7 @@ class cli:
             session.close()
         return code
 
-    async def add(self, data_obj):
+    def add(self, data_obj):
         """
         单条插入
         :param data_obj:
@@ -78,19 +80,19 @@ class cli:
         """
         session = self.get_session()
         try:
-            await session.begin(subtransactions=True)
+            session.begin(subtransactions=True)
             session.add(data_obj)
-            await session.commit()
+            session.commit()
             return 0
         except Exception as e:
             logging.info('{}-{}'.format('*****mysql_error*****', e))
-            await session.rollback()
+            session.rollback()
             return -1
         finally:
             if not session:
-                await session.close()
+                session.close()
 
-    async def bulk_insert(self, table, data_list):
+    def bulk_insert(self, table, data_list):
         """
         session兼容老代码 可以不传
         批量插入 传[{}]类型

@@ -9,7 +9,7 @@ subpath = 'ss'
 # TOKEN 有效期15天，过期登录更新TOKEN,否着不变
 TOKEN_EXPIRATION = 15 * 24 * 3600
 # MySQLConfig
-MYSQL = 'mysql+pymysql://root:wangxiaoqiang@localhost:3306/tdh?charset=utf8mb4'
+MYSQL = 'mysql+aiomysql://root:wangxiaoqiang@localhost:3306/tdh?charset=utf8'
 # Redis Config
 REDIS = {
     'HOST': '127.0.0.1',
