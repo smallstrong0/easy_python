@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # @Author: ss
-# @Time: 2023-07-11 16:06:08
+# @Time: 2023-08-03 10:46:33
 # @File: test_mysql.py
 
 from lib.common.error import TestErrorType,CommonError
@@ -44,14 +44,14 @@ def get_test(query_list=[], join=[], join_two=[], join_three=[], filters=[], gro
     return mysql_rds.find_one(query_list=query_list, join=join, join_two=join_two, join_three=join_three, filters=filters, group_by=group_by ,order_by=order_by)
 
 
-def get_test_list(query_list=[], join=[], join_two=[], join_three=[], outerjoin=[], filters=[], group_by=[],having=[], order_by=[], limit=0, offset=0):
+def get_test_list(query_list=[], join=[], join_two=[], join_three=[], outerjoin=[], filters=[], group_by=[], having=[], order_by=[], limit=0, offset=0):
     return mysql_rds.find_list(query_list=query_list, join=join, join_two=join_two, join_three=join_three,
                                outerjoin=outerjoin, filters=filters, group_by=group_by, having=having, order_by=order_by,
                                limit=limit,
                                offset=offset)
 
 
-def get_test_list_count(query_list=[], join=[], join_two=[], join_three=[], outerjoin=[], filters=[], group_by=[],having=[],
+def get_test_list_count(query_list=[], join=[], join_two=[], join_three=[], outerjoin=[], filters=[], group_by=[], having=[],
                         order_by=[]):
     return mysql_rds.count(query_list=query_list, join=join, join_two=join_two, join_three=join_three,
                            outerjoin=outerjoin, filters=filters, group_by=group_by, having=having, order_by=order_by)
