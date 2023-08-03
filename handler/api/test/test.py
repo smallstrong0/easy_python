@@ -17,7 +17,7 @@ from lib.common.aliyun_mysql import mysql_rds
 
 
 class TestListHandler(BaseHandler):
-    def post(self):
+    def get(self):
         """
         @api {POST} /test/info/list   测试列表
         @apiGroup test
@@ -50,13 +50,15 @@ class TestListHandler(BaseHandler):
         }
         """
         keys = {
-            'user_id': None,
-            'ts': None,
-            'nonce': None,
+            # 'user_id': None,
+            # 'ts': None,
+            # 'nonce': None,
             "page": 1,
             "pagesize": 10,
         }
-        params, error = com_func.get_params_verify_sig(self.request, keys)
+        error = None
+        params = {}
+        # params, error = com_func.get_params_without_sig(self.request, keys)
         if error is None:
             error, data = lib.dap.test.get_test_list(params)
             self.write_json(error, data)

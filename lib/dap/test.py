@@ -12,7 +12,7 @@ import lib.common.func as com_func
 from lib.model.model import Test
 from lib.common.error import TestErrorType, CommonError
 import lib.dao.sequence
-from handler import ylc_thread_pool, service_thread_pool
+from handler import ylc_thread_pool
 from lib.common.aliyun_mysql import mysql_rds
 from tornado.ioloop import IOLoop
 import asyncio
@@ -95,14 +95,13 @@ async def get_test(params):
 
 
 def get_test_list(params):
-    page = int(params['page'])
-    pagesize = int(params['pagesize'])
-    data_list = lib.dao.test.get_test_list(
-        page=page,
-        pagesize=pagesize
+    # page = int(params['page'])
+    # pagesize = int(params['pagesize'])
+    data_list = lib.dao.test.get_fields_test_list(
+        fields=[Test.test_id,Test.test_name]
     )
-    count = lib.dao.test.get_test_list_count()
-    result = com_func.pagination(
-        data_list, count, page, pagesize
-    )
-    return None, result
+    # count = lib.dao.test.get_test_list_count()
+    # result = com_func.pagination(
+    #     data_list, count, page, pagesize
+    # )
+    return None, data_list

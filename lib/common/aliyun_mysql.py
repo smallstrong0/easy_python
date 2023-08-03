@@ -242,7 +242,7 @@ class cli:
             query = query.filter(*filters)
         return query.subquery()
 
-    def find_list(self, query_list=[], join=[], join_two=[], join_three=[], outerjoin=[], filters=[], group_by=[],
+    def find_list(self, query_list=[], join=[], join_two=[], join_three=[], outerjoin=[], filters=[], group_by=[],having=[],
                   order_by=[],
                   limit=0, offset=0):
         """
@@ -286,6 +286,8 @@ class cli:
             query = query.filter(*filters)
         if group_by:
             query = query.group_by(*group_by)
+            if having:
+                query.having(*having)
         if order_by:
             query = query.order_by(*order_by)
         if limit:
@@ -314,7 +316,7 @@ class cli:
                     return_data_list.append(_list)
             return return_data_list
 
-    def count(self, query_list=[], join=[], join_two=[], join_three=[], outerjoin=[], filters=[], group_by=[],
+    def count(self, query_list=[], join=[], join_two=[], join_three=[], outerjoin=[], filters=[], group_by=[],having=[],
               order_by=[]):
         session = self.get_session()
         query = session.query(*query_list)
@@ -330,6 +332,8 @@ class cli:
             query = query.filter(*filters)
         if group_by:
             query = query.group_by(*group_by)
+            if having:
+                query.having(*having)
         if order_by:
             query = query.order_by(*order_by)
         ret_data = query.scalar()

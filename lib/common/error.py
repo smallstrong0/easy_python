@@ -58,3 +58,21 @@ class TestErrorType(Enum):
     TEST_UPDATE_ERROR = (34402, "测试修改失败")
     TEST_BULK_UPDATE_ERROR = (34403, "测试批量修改失败")
     TEST_DELETE_ERROR = (34404, "测试删除失败")
+
+
+# 测试相关
+class TestErrorType(Enum):
+    TEST_ADD_ERROR = (34500, "测试添加失败")
+    TEST_BULK_ADD_ERROR = (34501, "测试批量添加失败")
+    TEST_UPDATE_ERROR = (34502, "测试修改失败")
+    TEST_BULK_UPDATE_ERROR = (34503, "测试批量修改失败")
+    TEST_DELETE_ERROR = (34504, "测试删除失败")
+
+
+# 测试相关
+class TestErrorType(Enum):
+    TEST_ADD_ERROR = (34600, "测试添加失败")
+    TEST_BULK_ADD_ERROR = (34601, "测试批量添加失败")
+    TEST_UPDATE_ERROR = (34602, "测试修改失败")
+    TEST_BULK_UPDATE_ERROR = (34603, "测试批量修改失败")
+    TEST_DELETE_ERROR = (34604, "测试删除失败")
