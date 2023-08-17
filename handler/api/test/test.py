@@ -12,7 +12,6 @@ from handler.base import BaseHandler
 from tornado import gen
 from tornado.ioloop import IOLoop
 from handler import ylc_thread_pool
-from asgiref.sync import sync_to_async
 from lib.common.aliyun_mysql import mysql_rds
 
 
@@ -187,7 +186,7 @@ class TestHandler(BaseHandler):
         """
         keys = {
         }
-        error, data = await self.do_task(keys, lib.dap.test.get_test, False)
+        error, data = await self.do_task(keys, lib.dap.test.get_count, False)
         if error is None:
             print('end is {}'.format(com_func.get_ts()))
             session = mysql_rds.get_session()

@@ -22,55 +22,71 @@ import threading
 import aiohttp
 
 
-def add_test(params):
+async def add_test(params):
     ts = com_func.get_ts()
-    user_id = params['user_id']
+    user_id = 1
     obj = Test(
         ctime=ts,
         mtime=ts,
         create_by=user_id,
         update_by=user_id
     )
-    lib.dao.test.add_test(obj=obj)
+    await lib.dao.test.add_test(obj=obj)
     return None, {}
 
 
-def bulk_add_test(params):
+async def bulk_add_test(params):
     ts = com_func.get_ts()
-    user_id = params['user_id']
-    info_list = params['info_list']
+    user_id = 1
+    info_list = [1,2,3]
     data_list = []
     for info in info_list:
         data_list.append(
-            {
-                'ctime': ts,
-                'mtime': ts,
-                'create_by': user_id,
-                'update_by': user_id,
-            }
+            Test(
+                ctime=ts,
+                mtime=ts,
+                create_by=user_id,
+                update_by=user_id
+            )
         )
-    lib.dao.test.bulk_add_test(data_list=data_list)
+    await lib.dao.test.bulk_add_test(data_list=data_list)
     return None, {}
 
 
-def update_test(params):
+async def update_test(params):
     ts = com_func.get_ts()
-    user_id = params['user_id']
-    test_id = params['test_id']
+    test_id = 1
     data_dict = {
-        'mtime': ts,
-        'update_by': user_id
+        'mtime': 10086,
+        'update_by': 10086
     }
-    lib.dao.test.update_test(
+    await lib.dao.test.update_test(
         test_id=test_id,
         data_dict=data_dict
     )
     return None, {}
 
+async def bulk_update_test(params):
+    ts = com_func.get_ts()
+    test_id = 1
+    await lib.dao.test.bulk_update_test(
+        data_list=[
+            {
+                'test_id':1,
+                'ctime':888
+            },
+            {
+                'test_id': 1,
+                'ctime': 999
+            },
+        ]
+    )
+    return None, {}
 
-def delete_test(params):
-    test_id = params['test_id']
-    lib.dao.test.delete_test(test_id=test_id)
+
+async def delete_test(params):
+    test_id = 2
+    await lib.dao.test.delete_test(test_id=test_id)
     return None, {}
 
 
@@ -88,9 +104,22 @@ async def get_test(params):
     print('start is {}'.format(com_func.get_ts()))
     session = mysql_rds.get_session()
     print(id(session))
-    res = await get_res()
+    data = await lib.dao.test.get_test(test_id=1)
+    # res = await get_res()
     return None, {
-        'msg': res
+        'msg': data
+    }
+
+async def get_all_test(params):
+    data = await lib.dao.test.get_test_list_all()
+    return None, {
+        'msg': data
+    }
+
+async def get_count(params):
+    data = await lib.dao.test.get_test_list_count()
+    return None, {
+        'msg': data
     }
 
 

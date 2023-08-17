@@ -1,17 +1,11 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-from contextlib import contextmanager
-from sqlalchemy.ext.asyncio import create_async_engine
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.ext.asyncio import async_sessionmaker
-from sqlalchemy import select
-
-
-from lib.model.model import *
 from setting import MYSQL
 from sqlalchemy.orm.decl_api import DeclarativeMeta
 from lib.common.func import session_context_manage
 import logging, functools, datetime
+from sqlalchemy import or_, and_, any_, text, exists, func, distinct, between, case, select, update, delete
+from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession, create_async_engine, AsyncAttrs
 
 
 class cli:
@@ -20,19 +14,12 @@ class cli:
     '''
 
     def __init__(self):
-        self.engine = create_async_engine(MYSQL, pool_size=50, pool_recycle=3600,echo=True)
-        self.DBSession = async_sessionmaker(bind=self.engine, class_=AsyncSession)
-
-    def session_maker(self, session=None):
-        code = 0
-        try:
-            session.commit()
-        except Exception as e:
-            session.rollback()
-            code = -1
-        finally:
-            session.close()
-        return code
+        self.async_engine = create_async_engine(MYSQL, pool_size=50, pool_recycle=3600, echo=True)
+        # 创建异步数据库会话
+        self.DBSession = async_sessionmaker(
+            bind=self.async_engine,
+            class_=AsyncSession
+        )
 
     def create_partial_session(self):
         '''
@@ -54,20 +41,21 @@ class cli:
             session_context_manage.set(session)
         return session
 
-    def finish(self):
+    async def finish(self, session=None):
         """
         最终提交
         """
-        session = self.get_session()
+        if not session:
+            session = self.get_session()
         code = 0
         try:
-            session.commit()
+            await session.commit()
         except Exception as e:
             logging.info('{}-{}'.format('*****mysql_error*****', e))
-            session.rollback()
+            await session.rollback()
             code = -1
         finally:
-            session.close()
+            await session.close()
         return code
 
     async def add(self, data_obj):
@@ -78,7 +66,7 @@ class cli:
         """
         session = self.get_session()
         try:
-            await session.begin(subtransactions=True)
+            session.begin_nested()
             session.add(data_obj)
             await session.commit()
             return 0
@@ -90,9 +78,8 @@ class cli:
             if not session:
                 await session.close()
 
-    async def bulk_insert(self, table, data_list):
+    async def bulk_insert(self, data_list):
         """
-        session兼容老代码 可以不传
         批量插入 传[{}]类型
         :param table:
         :param data_list:
@@ -100,19 +87,19 @@ class cli:
         """
         session = self.get_session()
         try:
-            session.begin(subtransactions=True)
-            session.bulk_insert_mappings(table, data_list)
-            session.commit()
+            session.begin_nested()
+            session.add_all(data_list)
+            await session.commit()
             return 0
         except Exception as e:
             logging.info('{}-{}-{}'.format('*****mysql_error*****', e, data_list))
-            session.rollback()
+            await session.rollback()
             return -1
         finally:
             if not session:
-                session.close()
+                await session.close()
 
-    def update(self, table, filters, data_dict):
+    async def update(self, table, filters, data_dict):
         """
         修改
         :param table:
@@ -122,19 +109,19 @@ class cli:
         """
         session = self.get_session()
         try:
-            session.begin(subtransactions=True)
-            session.query(table).filter(*filters).update(data_dict, synchronize_session=False)
-            session.commit()
+            session.begin_nested()
+            await session.execute(update(table).where(*filters).values(data_dict))
+            await session.commit()
             return 0
         except Exception as e:
             logging.info('{}-{}-{}'.format('*****mysql_error*****', e, data_dict))
-            session.rollback()
+            await session.rollback()
             return -1
         finally:
             if not session:
-                session.close()
+                await session.close()
 
-    def delete(self, table, filters):
+    async def delete(self, table, filters):
         """
         删除
         :param table:
@@ -143,44 +130,45 @@ class cli:
         """
         session = self.get_session()
         try:
-            session.begin(subtransactions=True)
-            session.query(table).filter(*filters).delete(synchronize_session=False)
-            session.commit()
+            session.begin_nested()
+            await session.execute(delete(table).where(*filters))
+            await session.commit()
             return 0
         except Exception as e:
             logging.info('{}-{}'.format('*****mysql_error*****', e))
-            session.rollback()
+            await session.rollback()
             return -1
         finally:
             if not session:
-                session.close()
+                await session.close()
 
-    def bulk_update(self, table, data_list):
-        """
-        批量修改 传[{primary_key}]类型,根据主键确定行
-        :param table:
-        :param data_list:
-        :return:
-        """
-        session = self.get_session()
-        try:
-            session.begin(subtransactions=True)
-            session.bulk_update_mappings(table, data_list)
-            session.commit()
-            return 0
-        except Exception as e:
-            logging.info('{}-{}-{}'.format('*****mysql_error*****', e, data_list))
-            session.rollback()
-            return -1
-        finally:
-            if not session:
-                session.close()
+    # async def bulk_update(self, table, data_list):
+    #     """
+    #     批量修改 传[{primary_key}]类型,根据主键确定行
+    #     :param table:
+    #     :param data_list:
+    #     :return:
+    #     """
+    #     session = self.get_session()
+    #     try:
+    #         session.begin_nested()
+    #         await session.bulk_update_mappings(table, data_list) # todo error
+    #         await session.commit()
+    #         return 0
+    #     except Exception as e:
+    #         logging.info('{}-{}-{}'.format('*****mysql_error*****', e, data_list))
+    #         await session.rollback()
+    #         return -1
+    #     finally:
+    #         if not session:
+    #             await session.close()
 
-    def find_one(self, query_list=[], join=[], join_two=[], join_three=[], filters=[], group_by=[], order_by=[]):
+    async def find_one(self, query_list=[], join=[], join_two=[], join_three=[], filters=[], group_by=[], order_by=[]):
         """
         query_list 有五种入参及返回格式 1.[obj] 2.[obj1,obj2] 3.[obj1,field] 4.[field] 5.[field,field]
         return 对应格式 1.{} 2.[{},{}] 3. [{},1] 4. 1  5.[1,2]
         """
+        session = self.get_session()
         obj_list_index = []
         if len(query_list) == 1 and isinstance(query_list[0], DeclarativeMeta):
             _type = 1
@@ -193,8 +181,7 @@ class cli:
                     obj_list_index.append(True)
                 else:
                     obj_list_index.append(False)
-        session = self.get_session()
-        query = session.query(*query_list)
+        query = select(*query_list)
         if join:
             query = query.join(*join)
         if join_two:
@@ -202,12 +189,13 @@ class cli:
         if join_three:
             query = query.join(*join_three)
         if filters:
-            query = query.filter(*filters)
+            query = query.where(*filters)
         if group_by:
             query = query.group_by(*group_by)
         if order_by:
             query = query.order_by(*order_by)
-        ret_data = query.first()
+        res = await session.execute(query)
+        ret_data = res.fetchone()
         if not ret_data:
             return {}
         if _type == 1:
@@ -227,24 +215,25 @@ class cli:
                     _list.append(data)
             return _list
 
-    def subquery(self, query_list=[], join=[], join_two=[], join_three=[], outerjoin=[], filters=[]):
-        session = self.get_session()
-        query = session.query(*query_list)
-        if join:
-            query = query.join(*join)
-        if join_two:
-            query = query.join(*join_two)
-        if join_three:
-            query = query.join(*join_three)
-        if outerjoin:
-            query = query.outerjoin(*outerjoin)
-        if filters:
-            query = query.filter(*filters)
-        return query.subquery()
+    # def subquery(self, query_list=[], join=[], join_two=[], join_three=[], outerjoin=[], filters=[]):
+    #     session = self.get_session() # todo
+    #     query = select(*query_list)
+    #     if join:
+    #         query = query.join(*join)
+    #     if join_two:
+    #         query = query.join(*join_two)
+    #     if join_three:
+    #         query = query.join(*join_three)
+    #     if outerjoin:
+    #         query = query.outerjoin(*outerjoin)
+    #     if filters:
+    #         query = query.where(*filters)
+    #     return query.subquery()
 
-    def find_list(self, query_list=[], join=[], join_two=[], join_three=[], outerjoin=[], filters=[], group_by=[],having=[],
-                  order_by=[],
-                  limit=0, offset=0):
+    async def find_list(self, query_list=[], join=[], join_two=[], join_three=[], outerjoin=[], filters=[], group_by=[],
+                        having=[],
+                        order_by=[],
+                        limit=0, offset=0):
         """
         连表只允许最多三级
         :param query_list:
@@ -273,7 +262,7 @@ class cli:
                     obj_list_index.append(True)
                 else:
                     obj_list_index.append(False)
-        query = session.query(*query_list)
+        query = select(*query_list)
         if join:
             query = query.join(*join)
         if join_two:
@@ -294,12 +283,15 @@ class cli:
             query = query.limit(limit)
         if offset:
             query = query.offset(offset)
+
+        res = await session.execute(query)
+        ret_data = res.fetchall()
+
         if _type == 1:
-            return [obj.to_dict() for obj in query.all()]
+            return [obj[0].to_dict() for obj in ret_data]
         else:
-            all_data_list = query.all()
             return_data_list = []
-            for _tuple in all_data_list:
+            for _tuple in ret_data:
                 if len(_tuple) == 1:
                     return_data_list.append(_tuple[0])
                 else:
@@ -316,10 +308,11 @@ class cli:
                     return_data_list.append(_list)
             return return_data_list
 
-    def count(self, query_list=[], join=[], join_two=[], join_three=[], outerjoin=[], filters=[], group_by=[],having=[],
-              order_by=[]):
+    async def count(self, query_list=[], join=[], join_two=[], join_three=[], outerjoin=[], filters=[], group_by=[],
+                    having=[],
+                    order_by=[]):
         session = self.get_session()
-        query = session.query(*query_list)
+        query = select(*query_list)
         if join:
             query = query.join(*join)
         if join_two:
@@ -336,43 +329,29 @@ class cli:
                 query.having(*having)
         if order_by:
             query = query.order_by(*order_by)
-        ret_data = query.scalar()
-        return ret_data or 0
+        count = await session.execute(query)
+        return count.scalar() or 0
 
-    def rollback(self):
-        self.get_session().rollback()
+    async def rollback(self):
+        await self.get_session().rollback()
 
-    def close(self):
-        self.get_session().close()
+    async def close(self):
+        await self.get_session().close()
 
-    def commit(self):
-        self.get_session().commit()
+    async def commit(self):
+        await self.get_session().commit()
 
-    def sql_execute(self, sql_str):
+    async def sql_execute(self, sql_str):
         session = self.get_session()
         try:
-            return session.execute(sql_str)
+            return await session.execute(sql_str)
         except Exception as e:
             logging.info('{}-{}-{}'.format('*****mysql_error*****', e, sql_str))
-            session.rollback()
+            await session.rollback()
             return None
         finally:
             if not session:
-                session.close()
+                await session.close()
 
 
 mysql_rds = cli()
-
-
-@contextmanager
-def session_context():
-    session = mysql_rds.create_partial_session()
-    try:
-        yield session
-        session.commit()
-    except Exception as e:
-        session.rollback()
-        raise e
-    finally:
-        if session:
-            session.close()

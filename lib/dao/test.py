@@ -17,70 +17,75 @@ from lib.model.model import Test
 # 注意所有的sql都传列表类型
 ### add func #####
 
-def add_test(obj):
-    test_mysql.add_test(
+async def add_test(obj):
+    await test_mysql.add_test(
         data_obj=obj
     )
 
-def bulk_add_test(data_list):
-    test_mysql.bulk_add_test(data_list=data_list)
+async def bulk_add_test(data_list):
+    await test_mysql.bulk_add_test(data_list=data_list)
 
 ### add func #####
 
 ### delete func #####
-def delete_test(test_id=-1):
+async def delete_test(test_id=-1):
     filters = []
     if test_id != -1:
         filters.append(Test.test_id == test_id)
-    # test_mysql.delete_test(
-    #     filters=filters
-    # )
-    test_mysql.update_test(
-        filters=filters,
-        data_dict={
-            'is_delete': 1,
-            'mtime': com_func.get_ts()
-        }
+    await test_mysql.delete_test(
+        filters=filters
     )
+    # test_mysql.update_test(
+    #     filters=filters,
+    #     data_dict={
+    #         'is_delete': 1,
+    #         'mtime': com_func.get_ts()
+    #     }
+    # )
 
 ### delete func #####
 
 ### update func #####
-def update_test(test_id=-1, data_dict={}):
+async def update_test(test_id=-1, data_dict={}):
     filters = []
     if test_id != -1:
         filters.append(Test.test_id == test_id)
-    test_mysql.update_test(
+    await test_mysql.update_test(
         filters=filters,
         data_dict=data_dict
     )
 
-def bulk_update_test(data_list):
-    test_mysql.bulk_update_test(data_list=data_list)
+async def bulk_update_test(data_list):
+    await test_mysql.bulk_update_test(data_list=data_list)
 
 ### update func #####
 
 ### get one data func #####
-def get_test(test_id=-1):
+async def get_test(test_id=-1):
     filters = [Test.is_delete == 0]
     if test_id != -1:
         filters.append(Test.test_id == test_id)
-    data = test_mysql.get_test(
-        query_list=[Test],
+
+    filters.append(Test.test_id.in_([1,2,3]))
+
+    data = await test_mysql.get_test(
+        query_list=[Test,Test.ctime],
         filters=filters,
+        group_by=[Test.test_id],
+        order_by=[Test.ctime.desc()]
     )
-    return data
+    return  data
 
 ### get one data func #####
 
 ### get data_list func #####
-def get_test_list_all(test_id_list=-1):
+async def get_test_list_all(test_id_list=-1):
     filters = [Test.is_delete == 0]
     if test_id_list != -1:
         filters.append(Test.test_id.in_(test_id_list))
     order_by = [Test.ctime.desc()]
-    data_list = test_mysql.get_test_list(
-        query_list=[Test],
+    data_list = await test_mysql.get_test_list(
+        query_list=[Test.ctime],
         filters=filters,
         order_by=order_by,
     )
@@ -95,7 +100,7 @@ def get_fields_test_list_all(fields=[],test_id_list=-1):
         filters.append(Test.test_id.in_(test_id_list))
     order_by = [Test.ctime.desc()]
     data_list = test_mysql.get_test_list(
-        query_list=[Test],
+        query_list=[Test,Test.ctime],
         filters=filters,
         order_by=order_by,
     )
@@ -159,11 +164,11 @@ def get_test_list(test_id_list=-1, page=1, pagesize=10):
     return data_list
 
 
-def get_test_list_count(test_id_list=-1):
-    filters = [Test.is_delete == 0]
+async def get_test_list_count(test_id_list=-1):
+    filters = [Test.is_delete == 1]
     if test_id_list != -1:
         filters.append(Test.test_id.in_(test_id_list))
-    count = test_mysql.get_test_list_count(
+    count = await test_mysql.get_test_list_count(
         query_list=[func.count(Test.test_id)],
         filters=filters,
     )
