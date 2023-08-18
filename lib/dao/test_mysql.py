@@ -35,7 +35,7 @@ async def update_test(filters, data_dict):
 
 
 async def bulk_update_test(data_list):
-    code = await mysql_rds.bulk_update(table=Test, data_list=data_list)
+    code = await mysql_rds.bulk_update(table=Test,data_list=data_list)
     if code == -1:
         raise CommonError(TestErrorType.TEST_BULK_UPDATE_ERROR.value)
 

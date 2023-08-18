@@ -142,26 +142,29 @@ class cli:
             if not session:
                 await session.close()
 
-    # async def bulk_update(self, table, data_list):
-    #     """
-    #     批量修改 传[{primary_key}]类型,根据主键确定行
-    #     :param table:
-    #     :param data_list:
-    #     :return:
-    #     """
-    #     session = self.get_session()
-    #     try:
-    #         session.begin_nested()
-    #         await session.bulk_update_mappings(table, data_list) # todo error
-    #         await session.commit()
-    #         return 0
-    #     except Exception as e:
-    #         logging.info('{}-{}-{}'.format('*****mysql_error*****', e, data_list))
-    #         await session.rollback()
-    #         return -1
-    #     finally:
-    #         if not session:
-    #             await session.close()
+    async def bulk_update(self, table, data_list):
+        """
+        批量修改 传[{primary_key}]类型,根据主键确定行
+        :param table:
+        :param data_list:
+        :return:
+        """
+        session = self.get_session()
+        try:
+            session.begin_nested()
+            pk = table.__table__.primary_key.c._all_columns[0]
+            key = pk.key
+            for data in data_list:
+                await session.execute(update(table).where(pk == data.pop(key)).values(data))
+            await session.commit()
+            return 0
+        except Exception as e:
+            logging.info('{}-{}-{}'.format('*****mysql_error*****', e, data_list))
+            await session.rollback()
+            return -1
+        finally:
+            if not session:
+                await session.close()
 
     async def find_one(self, query_list=[], join=[], join_two=[], join_three=[], filters=[], group_by=[], order_by=[]):
         """

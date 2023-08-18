@@ -73,11 +73,11 @@ async def bulk_update_test(params):
         data_list=[
             {
                 'test_id':1,
-                'ctime':888
+                'ctime':999
             },
             {
-                'test_id': 1,
-                'ctime': 999
+                'test_id': 3,
+                'ctime': 777
             },
         ]
     )

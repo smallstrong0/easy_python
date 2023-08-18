@@ -186,7 +186,7 @@ class TestHandler(BaseHandler):
         """
         keys = {
         }
-        error, data = await self.do_task(keys, lib.dap.test.get_count, False)
+        error, data = await self.do_task(keys, lib.dap.test.bulk_update_test, False)
         if error is None:
             print('end is {}'.format(com_func.get_ts()))
             session = mysql_rds.get_session()
