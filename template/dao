@@ -17,25 +17,25 @@ from lib.model.model import ${Table}
 # 注意所有的sql都传列表类型
 ### add func #####
 
-def add_${table}(obj):
-    ${table}_mysql.add_${table}(
+async def add_${table}(obj):
+    await ${table}_mysql.add_${table}(
         data_obj=obj
     )
 
-def bulk_add_${table}(data_list):
-    ${table}_mysql.bulk_add_${table}(data_list=data_list)
+async def bulk_add_${table}(data_list):
+    await ${table}_mysql.bulk_add_${table}(data_list=data_list)
 
 ### add func #####
 
 ### delete func #####
-def delete_${table}(${table}_id=-1):
+async def delete_${table}(${table}_id=-1):
     filters = []
     if ${table}_id != -1:
         filters.append(${Table}.${table}_id == ${table}_id)
     # ${table}_mysql.delete_${table}(
     #     filters=filters
     # )
-    ${table}_mysql.update_${table}(
+    await ${table}_mysql.update_${table}(
         filters=filters,
         data_dict={
             'is_delete': 1,
@@ -46,26 +46,26 @@ def delete_${table}(${table}_id=-1):
 ### delete func #####
 
 ### update func #####
-def update_${table}(${table}_id=-1, data_dict={}):
+async def update_${table}(${table}_id=-1, data_dict={}):
     filters = []
     if ${table}_id != -1:
         filters.append(${Table}.${table}_id == ${table}_id)
-    ${table}_mysql.update_${table}(
+    await ${table}_mysql.update_${table}(
         filters=filters,
         data_dict=data_dict
     )
 
-def bulk_update_${table}(data_list):
-    ${table}_mysql.bulk_update_${table}(data_list=data_list)
+async def bulk_update_${table}(data_list):
+    await ${table}_mysql.bulk_update_${table}(data_list=data_list)
 
 ### update func #####
 
 ### get one data func #####
-def get_${table}(${table}_id=-1):
+async def get_${table}(${table}_id=-1):
     filters = [${Table}.is_delete == 0]
     if ${table}_id != -1:
         filters.append(${Table}.${table}_id == ${table}_id)
-    data = ${table}_mysql.get_${table}(
+    data = await ${table}_mysql.get_${table}(
         query_list=[${Table}],
         filters=filters,
     )
@@ -74,12 +74,12 @@ def get_${table}(${table}_id=-1):
 ### get one data func #####
 
 ### get data_list func #####
-def get_${table}_list_all(${table}_id_list=-1):
+async def get_${table}_list_all(${table}_id_list=-1):
     filters = [${Table}.is_delete == 0]
     if ${table}_id_list != -1:
         filters.append(${Table}.${table}_id.in_(${table}_id_list))
     order_by = [${Table}.ctime.desc()]
-    data_list = ${table}_mysql.get_${table}_list(
+    data_list = await ${table}_mysql.get_${table}_list(
         query_list=[${Table}],
         filters=filters,
         order_by=order_by,
@@ -87,14 +87,14 @@ def get_${table}_list_all(${table}_id_list=-1):
     return data_list
 
 
-def get_fields_${table}_list_all(fields=[],${table}_id_list=-1):
+async def get_fields_${table}_list_all(fields=[],${table}_id_list=-1):
     if not fields:  # 注意重名多表字段取出的重名问题
         return []
     filters = [${Table}.is_delete == 0]
     if ${table}_id_list != -1:
         filters.append(${Table}.${table}_id.in_(${table}_id_list))
     order_by = [${Table}.ctime.desc()]
-    data_list = ${table}_mysql.get_${table}_list(
+    data_list = await ${table}_mysql.get_${table}_list(
         query_list=[${Table}],
         filters=filters,
         order_by=order_by,
@@ -114,14 +114,14 @@ def get_fields_${table}_list_all(fields=[],${table}_id_list=-1):
         return res
 
 
-def get_fields_${table}_list(fields=[], ${table}_id_list=-1, page=1, pagesize=10):
+async def get_fields_${table}_list(fields=[], ${table}_id_list=-1, page=1, pagesize=10):
     if not fields:  # 注意重名多表字段取出的重名问题
         return []
     filters = [${Table}.is_delete == 0]
     if ${table}_id_list != -1:
         filters.append(${Table}.${table}_id.in_(${table}_id_list))
     order_by = [${Table}.ctime.desc()]
-    data_list = ${table}_mysql.get_${table}_list(
+    data_list = await ${table}_mysql.get_${table}_list(
         query_list=[${Table}],
         filters=filters,
         order_by=order_by,
@@ -144,12 +144,12 @@ def get_fields_${table}_list(fields=[], ${table}_id_list=-1, page=1, pagesize=10
 
 
 
-def get_${table}_list(${table}_id_list=-1, page=1, pagesize=10):
+async def get_${table}_list(${table}_id_list=-1, page=1, pagesize=10):
     filters = [${Table}.is_delete == 0]
     if ${table}_id_list != -1:
         filters.append(${Table}.${table}_id.in_(${table}_id_list))
     order_by = [${Table}.ctime.desc()]
-    data_list = ${table}_mysql.get_${table}_list(
+    data_list = await ${table}_mysql.get_${table}_list(
         query_list=[${Table}],
         filters=filters,
         order_by=order_by,
@@ -159,11 +159,11 @@ def get_${table}_list(${table}_id_list=-1, page=1, pagesize=10):
     return data_list
 
 
-def get_${table}_list_count(${table}_id_list=-1):
+async def get_${table}_list_count(${table}_id_list=-1):
     filters = [${Table}.is_delete == 0]
     if ${table}_id_list != -1:
         filters.append(${Table}.${table}_id.in_(${table}_id_list))
-    count = ${table}_mysql.get_${table}_list_count(
+    count = await ${table}_mysql.get_${table}_list_count(
         query_list=[func.count(${Table}.${table}_id)],
         filters=filters,
     )

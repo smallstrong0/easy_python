@@ -13,7 +13,7 @@ from tornado import gen
 
 
 class ${Table}ListHandler(BaseHandler):
-    def post(self):
+    async def post(self):
         """
         @api {POST} /${module}/${func}/list   ${table_name}列表
         @apiGroup ${module}
@@ -52,9 +52,8 @@ class ${Table}ListHandler(BaseHandler):
             "page": 1,
             "pagesize": 10,
         }
-        params, error = com_func.get_params_verify_sig(self.request, keys)
+        error, data = await self.do_task(keys=keys, task_func=lib.dap.${table}.get_${table}_list, sig=True)
         if error is None:
-            error, data = lib.dap.${table}.get_${table}_list(params)
             self.write_json(error, data)
         else:
             self.write_json(error)
@@ -62,7 +61,7 @@ class ${Table}ListHandler(BaseHandler):
 
 class ${Table}Handler(BaseHandler):
     @gen.coroutine
-    def post(self):
+    async def post(self):
         """
         @api {POST} /${module}/${func}  ${table_name}添加
         @apiGroup ${module}
@@ -87,15 +86,14 @@ class ${Table}Handler(BaseHandler):
             'ts': None,
             'nonce': None,
         }
-        params, error = com_func.get_params_verify_sig(self.request, keys)
+        error, data = await self.do_task(keys=keys, task_func=lib.dap.${table}.add_${table}, sig=True)
         if error is None:
-            error, data = lib.dap.${table}.add_${table}(params)
             self.write_json(error, data)
         else:
             self.write_json(error)
 
     @gen.coroutine
-    def put(self):
+    async def put(self):
         """
         @api {PUT} /${module}/${func}  ${table_name}修改
         @apiGroup ${module}
@@ -119,15 +117,14 @@ class ${Table}Handler(BaseHandler):
             'ts': None,
             'nonce': None,
         }
-        params, error = com_func.get_params_verify_sig(self.request, keys)
+        error, data = await self.do_task(keys=keys, task_func=lib.dap.${table}.update_${table}, sig=True)
         if error is None:
-            error, data = lib.dap.${table}.update_${table}(params)
             self.write_json(error, data)
         else:
             self.write_json(error)
 
     @gen.coroutine
-    def delete(self):
+    async def delete(self):
         """
         @api {DELETE} /${module}/${func}  ${table_name}删除
         @apiGroup ${module}
@@ -151,15 +148,14 @@ class ${Table}Handler(BaseHandler):
             'ts': None,
             'nonce': None,
         }
-        params, error = com_func.get_params_verify_sig(self.request, keys)
+        error, data = await self.do_task(keys=keys, task_func=lib.dap.${table}.delete_${table}, sig=True)
         if error is None:
-            error, data = lib.dap.${table}.delete_${table}(params)
             self.write_json(error, data)
         else:
             self.write_json(error)
 
     @gen.coroutine
-    def get(self):
+    async def get(self):
         """
         @api {GET} /${module}/${func}  ${table_name}详情
         @apiGroup ${module}
@@ -185,9 +181,8 @@ class ${Table}Handler(BaseHandler):
             'ts': None,
             'nonce': None,
         }
-        params, error = com_func.get_params_verify_sig(self.request, keys)
+        error, data = await self.do_task(keys=keys, task_func=lib.dap.${table}.get_${table}, sig=True)
         if error is None:
-            error, data = lib.dap.${table}.get_${table}(params)
             self.write_json(error, data)
         else:
             self.write_json(error)
