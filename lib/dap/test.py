@@ -67,20 +67,23 @@ async def update_test(params):
     return None, {}
 
 async def bulk_update_test(params):
+    # raise CommonError(TestErrorType.TEST_ADD_ERROR.value)
     ts = com_func.get_ts()
     test_id = 1
     await lib.dao.test.bulk_update_test(
         data_list=[
             {
                 'test_id':1,
-                'ctime':999
+                'ctime':ts
             },
             {
                 'test_id': 3,
-                'ctime': 777
+                'ctime': ts
             },
         ]
     )
+    data = await lib.dao.test.get_test(test_id=1)
+    print(data)
     return None, {}
 
 

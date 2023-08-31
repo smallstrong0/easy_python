@@ -66,9 +66,10 @@ class cli:
         """
         session = self.get_session()
         try:
-            session.begin_nested()
+            nested_session = session.begin_nested()
+            await nested_session.start()
             session.add(data_obj)
-            await session.commit()
+            await nested_session.commit()
             return 0
         except Exception as e:
             logging.info('{}-{}'.format('*****mysql_error*****', e))
@@ -87,9 +88,10 @@ class cli:
         """
         session = self.get_session()
         try:
-            session.begin_nested()
+            nested_session = session.begin_nested()
+            await nested_session.start()
             session.add_all(data_list)
-            await session.commit()
+            await nested_session.commit()
             return 0
         except Exception as e:
             logging.info('{}-{}-{}'.format('*****mysql_error*****', e, data_list))
@@ -109,9 +111,10 @@ class cli:
         """
         session = self.get_session()
         try:
-            session.begin_nested()
+            nested_session = session.begin_nested()
+            await nested_session.start()
             await session.execute(update(table).where(*filters).values(data_dict))
-            await session.commit()
+            await nested_session.commit()
             return 0
         except Exception as e:
             logging.info('{}-{}-{}'.format('*****mysql_error*****', e, data_dict))
@@ -130,9 +133,10 @@ class cli:
         """
         session = self.get_session()
         try:
-            session.begin_nested()
+            nested_session = session.begin_nested()
+            await nested_session.start()
             await session.execute(delete(table).where(*filters))
-            await session.commit()
+            await nested_session.commit()
             return 0
         except Exception as e:
             logging.info('{}-{}'.format('*****mysql_error*****', e))
@@ -151,12 +155,13 @@ class cli:
         """
         session = self.get_session()
         try:
-            session.begin_nested()
+            nested_session = session.begin_nested()
+            await nested_session.start()
             pk = table.__table__.primary_key.c._all_columns[0]
             key = pk.key
             for data in data_list:
                 await session.execute(update(table).where(pk == data.pop(key)).values(data))
-            await session.commit()
+            await nested_session.commit()
             return 0
         except Exception as e:
             logging.info('{}-{}-{}'.format('*****mysql_error*****', e, data_list))
@@ -217,21 +222,6 @@ class cli:
                 else:
                     _list.append(data)
             return _list
-
-    # def subquery(self, query_list=[], join=[], join_two=[], join_three=[], outerjoin=[], filters=[]):
-    #     session = self.get_session() # todo
-    #     query = select(*query_list)
-    #     if join:
-    #         query = query.join(*join)
-    #     if join_two:
-    #         query = query.join(*join_two)
-    #     if join_three:
-    #         query = query.join(*join_three)
-    #     if outerjoin:
-    #         query = query.outerjoin(*outerjoin)
-    #     if filters:
-    #         query = query.where(*filters)
-    #     return query.subquery()
 
     async def find_list(self, query_list=[], join=[], join_two=[], join_three=[], outerjoin=[], filters=[], group_by=[],
                         having=[],

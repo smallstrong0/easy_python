@@ -98,14 +98,6 @@ class BaseHandler(RequestHandler):
 
     def write_json(self, error, data={}):
         if error is None:
-            code = mysql_rds.finish()
-            if code == -1:
-                error = CommonErrorType.DATA_ERROR.value
-        else:
-            mysql_rds.rollback()
-            mysql_rds.close()
-
-        if error is None:
             chunk = {
                 'code': 0,
                 'data': data
@@ -182,14 +174,14 @@ class BaseHandler(RequestHandler):
             if error is None:
                 params['remote_ip'] = self.request.remote_ip
                 error, data = await task_func(params)
+            await mysql_rds.finish()
         except Exception as e:
             traceback.print_exc()
-            mysql_rds.rollback()
+            await mysql_rds.rollback()
             error = e.common_error if hasattr(e, 'common_error') else (-1, '未知异常，请联系客服')
             data = {}
         finally:
-            # print('session id is {}'.format(id(mysql_rds.get_session())))
-            mysql_rds.close()
+            await mysql_rds.close()
 
         return error, data
 
