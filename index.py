@@ -11,6 +11,7 @@ import os, sys
 import asyncio
 from tornado.options import define, options, parse_command_line
 import logging.handlers
+from handler.base import APINotFoundHandler
 from url import urls
 
 # 配置优先级
@@ -31,6 +32,7 @@ logging.basicConfig(stream=sys.stdout,
 
 async def main():
     parse_command_line()
+    urls.append([r'.*', APINotFoundHandler])
     for u in urls:
         u[0] = '/' + options.subpath + u[0]
     print(urls)
