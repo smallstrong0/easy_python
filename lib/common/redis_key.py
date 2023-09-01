@@ -36,3 +36,9 @@ class TestRedis(object):
 class TestRedis(object):
     UNIQUE_KEY = PREFIX + "test:"+'{}'
     EX = 86400 * 15 + random.randint(1800, 3600)
+
+
+# 商品相关
+class GoodsRedis(object):
+    UNIQUE_KEY = PREFIX + "goods:"+'{}'
+    EX = 86400 * 15 + random.randint(1800, 3600)

@@ -48,6 +48,11 @@ class Test(BaseModel):
     test_name = Column(String(128), nullable=False, default="")
 
 
+class Goods(BaseModel):
+    __tablename__ = 'goods'
+    goods_id = Column(INTEGER(11), primary_key=True, autoincrement=True)
+    goods_name = Column(String(128), nullable=False, default="")
+
 if __name__ == '__main__':
     from sqlalchemy import create_engine
     from sqlalchemy.orm import sessionmaker, scoped_session
