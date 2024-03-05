@@ -5,7 +5,8 @@
 # @Des     : 
 # @File    : redis_tool.py
 # @Software: PyCharm
-import aioredis
+# import aioredis # python 3.11将 TimeoutError 移到了 asyncio.exceptions.TimeoutError ，aioredis
+from redis import asyncio as aioredis # 4.0之后代码就在redis库里面了
 
 
 class cli:
