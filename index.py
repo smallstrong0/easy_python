@@ -13,6 +13,8 @@ from tornado.options import define, options, parse_command_line
 import logging.handlers
 from handler.base import APINotFoundHandler
 from url import urls
+import uvloop
+asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 # 配置优先级
 '''
@@ -43,13 +45,7 @@ async def main():
         debug=options.debug,
         allow_remote_access=True
     )
-
-    # 定时任务
-    # start_scheduler()
-    # io_loop = tornado.ioloop.IOLoop.current()
-    # Star application
-    http_server = tornado.httpserver.HTTPServer(app, xheaders=True)
-    http_server.listen(port=options.port, address="0.0.0.0")
+    app.listen(port=options.port, address="0.0.0.0")
     print('Server is running at http://127.0.0.1:%s' % options.port)
     print('Quit the server with Control-C')
     await asyncio.Event().wait()

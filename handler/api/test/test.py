@@ -9,14 +9,11 @@
 import lib.dap.test
 import lib.common.func as com_func
 from handler.base import BaseHandler
-from tornado import gen
-from tornado.ioloop import IOLoop
-from handler import ylc_thread_pool
 from lib.common.aliyun_mysql import mysql_rds
 
 
 class TestListHandler(BaseHandler):
-    def get(self):
+    async def get(self):
         """
         @api {POST} /test/info/list   测试列表
         @apiGroup test
@@ -55,19 +52,15 @@ class TestListHandler(BaseHandler):
             "page": 1,
             "pagesize": 10,
         }
-        error = None
-        params = {}
-        # params, error = com_func.get_params_without_sig(self.request, keys)
+        error, data = await self.do_task(keys, lib.dap.test.get_test_list, False)
         if error is None:
-            error, data = lib.dap.test.get_test_list(params)
             self.write_json(error, data)
         else:
             self.write_json(error)
 
 
 class TestHandler(BaseHandler):
-    @gen.coroutine
-    def post(self):
+    async def post(self):
         """
         @api {POST} /test/info  测试添加
         @apiGroup test
@@ -92,15 +85,13 @@ class TestHandler(BaseHandler):
             'ts': None,
             'nonce': None,
         }
-        params, error = com_func.get_params_verify_sig(self.request, keys)
+        error, data = await self.do_task(keys, lib.dap.test.add_test, False)
         if error is None:
-            error, data = lib.dap.test.add_test(params)
             self.write_json(error, data)
         else:
             self.write_json(error)
 
-    @gen.coroutine
-    def put(self):
+    async def put(self):
         """
         @api {PUT} /test/info  测试修改
         @apiGroup test
@@ -124,15 +115,13 @@ class TestHandler(BaseHandler):
             'ts': None,
             'nonce': None,
         }
-        params, error = com_func.get_params_verify_sig(self.request, keys)
+        error, data = await self.do_task(keys, lib.dap.test.update_test, False)
         if error is None:
-            error, data = lib.dap.test.update_test(params)
             self.write_json(error, data)
         else:
             self.write_json(error)
 
-    @gen.coroutine
-    def delete(self):
+    async def delete(self):
         """
         @api {DELETE} /test/info  测试删除
         @apiGroup test
@@ -156,9 +145,8 @@ class TestHandler(BaseHandler):
             'ts': None,
             'nonce': None,
         }
-        params, error = com_func.get_params_verify_sig(self.request, keys)
+        error, data = await self.do_task(keys, lib.dap.test.delete_test, False)
         if error is None:
-            error, data = lib.dap.test.delete_test(params)
             self.write_json(error, data)
         else:
             self.write_json(error)
@@ -186,11 +174,8 @@ class TestHandler(BaseHandler):
         """
         keys = {
         }
-        error, data = await self.do_task(keys, lib.dap.test.bulk_update_test, False)
+        error, data = await self.do_task(keys, lib.dap.test.get_test, False)
         if error is None:
-            print('end is {}'.format(com_func.get_ts()))
-            session = mysql_rds.get_session()
-            print(id(session))
             self.write_json(error, data)
         else:
             self.write_json(error)

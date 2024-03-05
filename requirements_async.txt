@@ -1,7 +1,0 @@
-redis==4.6.0
-SQLAlchemy==2.0.20
-APScheduler==3.10.1
-tornado==6.3.2
-aiohttp==3.8.4
-aiomysql==0.2.0
-fastapi==0.2.0

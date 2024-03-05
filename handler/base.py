@@ -15,9 +15,13 @@ from lib.common.func import session_context_manage, get_time, get_ms, get_ts, de
     get_mq_redis_context_manage, set_mq_redis_context_manage, get_params_without_sig
 from lib.common.redis_queue import RedisQueue
 from lib.common.const import REDIS_QUEUE_NAME
-from handler import ylc_thread_pool
-
 from tornado.ioloop import IOLoop
+import concurrent.futures
+
+thread_pool = concurrent.futures.ThreadPoolExecutor(
+    thread_name_prefix='my',
+    max_workers=10
+)
 
 queue = RedisQueue(queue_name=REDIS_QUEUE_NAME['sys_api_log'])
 
@@ -161,7 +165,7 @@ class BaseHandler(RequestHandler):
         queue.put(msg_dict)
 
     def async_task(self, keys={}, task_func=None, sig=True):
-        return IOLoop.current().run_in_executor(ylc_thread_pool, self.do_task, keys, task_func, sig)
+        return IOLoop.current().run_in_executor(thread_pool, self.do_task, keys, task_func, sig)
 
     async def do_task(self, keys, task_func, sig):
         try:
