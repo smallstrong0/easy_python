@@ -61,47 +61,35 @@ async def bulk_update_${table}(data_list):
 ### update func #####
 
 ### get one data func #####
-async def get_${table}(${table}_id=-1):
+async def get_${table}(fields=[], ${table}_id=-1):
     filters = [${Table}.is_delete == 0]
     if ${table}_id != -1:
         filters.append(${Table}.${table}_id == ${table}_id)
     data = await ${table}_mysql.get_${table}(
-        query_list=[${Table}],
+        query_list=fields if fields else [${Table}],
         filters=filters,
     )
     return data
 
+
+
 ### get one data func #####
 
 ### get data_list func #####
-async def get_${table}_list_all(${table}_id_list=-1):
+
+async def get_${table}_list(fields=[], fields_ret_dict=False, ${table}_id_list=-1, page=0, pagesize=0):
     filters = [${Table}.is_delete == 0]
     if ${table}_id_list != -1:
         filters.append(${Table}.${table}_id.in_(${table}_id_list))
     order_by = [${Table}.ctime.desc()]
     data_list = await ${table}_mysql.get_${table}_list(
-        query_list=[${Table}],
+        query_list=fields if fields else [${Table}],
         filters=filters,
         order_by=order_by,
+        offset=pagesize * int(page - 1) if pagesize else 0,
+        limit=pagesize
     )
-    return data_list
-
-
-async def get_fields_${table}_list_all(fields=[],${table}_id_list=-1):
-    if not fields:  # 注意重名多表字段取出的重名问题
-        return []
-    filters = [${Table}.is_delete == 0]
-    if ${table}_id_list != -1:
-        filters.append(${Table}.${table}_id.in_(${table}_id_list))
-    order_by = [${Table}.ctime.desc()]
-    data_list = await ${table}_mysql.get_${table}_list(
-        query_list=[${Table}],
-        filters=filters,
-        order_by=order_by,
-    )
-    if len(fields) == 1:
-        return data_list  # 一般是取列表
-    else:
+    if fields and fields_ret_dict:
         name_list = []
         for info in fields:
             key = info.key
@@ -110,54 +98,8 @@ async def get_fields_${table}_list_all(fields=[],${table}_id_list=-1):
             else:
                 name_list.append(info.expression)  # test.test_id
         name_list = [info.key for info in fields]
-        res = [dict(zip(name_list, data)) for data in data_list]
-        return res
-
-
-async def get_fields_${table}_list(fields=[], ${table}_id_list=-1, page=1, pagesize=10):
-    if not fields:  # 注意重名多表字段取出的重名问题
-        return []
-    filters = [${Table}.is_delete == 0]
-    if ${table}_id_list != -1:
-        filters.append(${Table}.${table}_id.in_(${table}_id_list))
-    order_by = [${Table}.ctime.desc()]
-    data_list = await ${table}_mysql.get_${table}_list(
-        query_list=[${Table}],
-        filters=filters,
-        order_by=order_by,
-        offset=pagesize * int(page - 1),
-        limit=pagesize
-    )
-    if len(fields) == 1:
-        return data_list  # 一般是取列表
-    else:
-        name_list = []
-        for info in fields:
-            key = info.key
-            if key not in name_list:
-                name_list.append(key)
-            else:
-                name_list.append(info.expression)
-        name_list = [info.key for info in fields]
-        res = [dict(zip(name_list, data)) for data in data_list]
-        return res
-
-
-
-async def get_${table}_list(${table}_id_list=-1, page=1, pagesize=10):
-    filters = [${Table}.is_delete == 0]
-    if ${table}_id_list != -1:
-        filters.append(${Table}.${table}_id.in_(${table}_id_list))
-    order_by = [${Table}.ctime.desc()]
-    data_list = await ${table}_mysql.get_${table}_list(
-        query_list=[${Table}],
-        filters=filters,
-        order_by=order_by,
-        offset=pagesize * int(page - 1),
-        limit=pagesize
-    )
+        data_list = [dict(zip(name_list, data)) for data in data_list]
     return data_list
-
 
 async def get_${table}_list_count(${table}_id_list=-1):
     filters = [${Table}.is_delete == 0]

@@ -9,7 +9,6 @@
 import lib.dap.${table}
 import lib.common.func as com_func
 from handler.base import BaseHandler
-from tornado import gen
 
 
 class ${Table}ListHandler(BaseHandler):
@@ -60,7 +59,6 @@ class ${Table}ListHandler(BaseHandler):
 
 
 class ${Table}Handler(BaseHandler):
-    @gen.coroutine
     async def post(self):
         """
         @api {POST} /${module}/${func}  ${table_name}添加
@@ -92,7 +90,6 @@ class ${Table}Handler(BaseHandler):
         else:
             self.write_json(error)
 
-    @gen.coroutine
     async def put(self):
         """
         @api {PUT} /${module}/${func}  ${table_name}修改
@@ -123,7 +120,6 @@ class ${Table}Handler(BaseHandler):
         else:
             self.write_json(error)
 
-    @gen.coroutine
     async def delete(self):
         """
         @api {DELETE} /${module}/${func}  ${table_name}删除
@@ -154,7 +150,6 @@ class ${Table}Handler(BaseHandler):
         else:
             self.write_json(error)
 
-    @gen.coroutine
     async def get(self):
         """
         @api {GET} /${module}/${func}  ${table_name}详情
