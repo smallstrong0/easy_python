@@ -6,14 +6,16 @@
 # @File    : redis_tool.py
 # @Software: PyCharm
 import aioredis
-import asyncio
 
 
 class cli:
-    def __init__(self, url):
+    def __init__(self):
         try:
             self.session = aioredis.from_url(
-                "redis://localhost", encoding="utf-8", decode_responses=True
+                url="redis://localhost",
+                host='127.0.0.1', port=6379, password='', db=0, socket_connect_timeout=5,
+                socket_timeout=10, max_connections=10,
+                encoding="utf-8", decode_responses=True
             )
         except Exception as e:
             raise
@@ -41,8 +43,6 @@ class cli:
         :return:
         """
         result = await self.session.get(key)
-        if result:
-            result = bytes.decode(result)
         return result
     async def delete_cache(self, key):
         await self.session.delete(key)
@@ -60,8 +60,6 @@ class cli:
 
     async def get_hash_key(self, name, key):
         result = await self.session.hget(name, key)
-        if result:
-            result = bytes.decode(result)
         return result
 
     async def expireat_hash_cache(self, name, expire_time):
