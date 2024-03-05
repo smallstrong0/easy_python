@@ -10,12 +10,12 @@ from lib.common.redis_util import redis_client
 from lib.common.func import serialize, deserialize
 
 
-def set_test_cache(key, data):
-    redis_client.set_str_cache(key=TestRedis.UNIQUE_KEY.format(key), str=serialize(data), ex=TestRedis.EX)
+async def set_test_cache(key, data):
+    await redis_client.set_str_cache(key=TestRedis.UNIQUE_KEY.format(key), str=serialize(data), ex=TestRedis.EX)
 
 
-def get_test_cache(key):
-    data = redis_client.get_str_cache(key=TestRedis.UNIQUE_KEY.format(key))
+async def get_test_cache(key):
+    data = await redis_client.get_str_cache(key=TestRedis.UNIQUE_KEY.format(key))
     if data:
         data = deserialize(data)
     else:
@@ -23,5 +23,5 @@ def get_test_cache(key):
     return data
 
 
-def delete_test_cache(key):
-    redis_client.delete_cache(key=TestRedis.UNIQUE_KEY.format(key))
+async def delete_test_cache(key):
+    await redis_client.delete_cache(key=TestRedis.UNIQUE_KEY.format(key))

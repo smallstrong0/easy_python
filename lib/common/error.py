@@ -85,3 +85,12 @@ class GoodsErrorType(Enum):
     GOODS_UPDATE_ERROR = (34702, "商品修改失败")
     GOODS_BULK_UPDATE_ERROR = (34703, "商品批量修改失败")
     GOODS_DELETE_ERROR = (34704, "商品删除失败")
+
+
+# 商品相关
+class GoodsErrorType(Enum):
+    GOODS_ADD_ERROR = (34800, "商品添加失败")
+    GOODS_BULK_ADD_ERROR = (34801, "商品批量添加失败")
+    GOODS_UPDATE_ERROR = (34802, "商品修改失败")
+    GOODS_BULK_UPDATE_ERROR = (34803, "商品批量修改失败")
+    GOODS_DELETE_ERROR = (34804, "商品删除失败")
